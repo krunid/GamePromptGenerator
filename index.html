@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตัวช่วยเขียน Prompt สร้างเกม</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+    }
+    textarea {
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-tr from-sky-100 via-white to-indigo-100 min-h-screen flex flex-col">
+  <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-center p-6 text-2xl font-bold shadow-md">
+    🎮 ตัวช่วยเขียน Prompt สำหรับสร้างเกมด้วย Canva AI
+  </header>
+
+  <main class="flex-1 p-6 max-w-6xl mx-auto w-full">
+    <div class="bg-white p-6 rounded-xl shadow-xl border mb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div>
+          <label class="block font-semibold mb-1">📘 เลือกวิชา</label>
+          <select id="subject" class="w-full p-2 border rounded shadow-sm" onchange="updateTopicOptions()">
+            <option>คณิตศาสตร์</option>
+            <option>วิทยาศาสตร์</option>
+            <option>ภาษาไทย</option>
+            <option>ภาษาอังกฤษ</option>
+            <option>ประวัติศาสตร์</option>
+            <option>สังคมศึกษา</option>
+            <option>ศิลปะ</option>
+            <option>สุขศึกษา</option>
+            <option>คอมพิวเตอร์</option>
+            <option>เศรษฐศาสตร์</option>
+            <option>พลศึกษา</option>
+            <option>กิจกรรมพัฒนาผู้เรียน</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">🎯 แนวคิดเกม</label>
+          <select id="idea" class="w-full p-2 border rounded shadow-sm">
+            <option>เกมบิงโก</option>
+            <option>เกมไขปริศนา</option>
+            <option>เกมกระดาน</option>
+            <option>เกมตอบคำถาม</option>
+            <option>เกมจำลองสถานการณ์</option>
+            <option>เกมผจญภัย</option>
+            <option>เกมเรียงลำดับ</option>
+            <option>เกมสวมบทบาท</option>
+            <option>เกมออกแบบตัวละคร</option>
+            <option>เกมการ์ดคำศัพท์</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">📚 เรื่อง (Topic)</label>
+          <select id="topic" class="w-full p-2 border rounded shadow-sm" onchange="checkCustomTopic(this)">
+            <option>เศษส่วน</option>
+            <option>แรงโน้มถ่วง</option>
+            <option>การวัด</option>
+            <option>พลังงาน</option>
+            <option>การแปลงหน่วย</option>
+            <option value="custom">อื่นๆ (พิมพ์เพิ่ม)</option>
+          </select>
+          <input type="text" id="customTopic" class="w-full p-2 mt-2 border rounded shadow-sm hidden" placeholder="ระบุหัวข้อเอง">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">🏫 ระดับชั้น</label>
+          <select id="level" class="w-full p-2 border rounded shadow-sm">
+            <option>ประถมต้น</option>
+            <option>ประถมปลาย</option>
+            <option>มัธยมต้น</option>
+            <option>มัธยมปลาย</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">👥 จำนวนผู้เล่น</label>
+          <select id="players" class="w-full p-2 border rounded shadow-sm">
+            <option>1 คน</option>
+            <option>2 คน</option>
+            <option>3-5 คน</option>
+            <option>ทีม 2 ทีม</option>
+            <option>ทีมละ 3 คน</option>
+            <option>เล่นได้ทั้งห้อง</option>
+            <option>เล่นแบบกลุ่มเล็ก</option>
+            <option>สุ่มจับคู่</option>
+            <option>เป็นรอบ ๆ</option>
+            <option>เล่นวนกัน</option>
+          </select>
+        </div>
+      </div>
+      <div class="text-center mt-6">
+        <button onclick="generatePrompts()" class="bg-indigo-600 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-indigo-700 transition-all duration-300">✨ สร้าง Prompt 2 แบบ</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-gradient-to-r from-indigo-100 to-blue-100 text-center text-sm text-gray-600 py-4">
+    © 2025 ตัวช่วยสร้างเกมโดยครูนิด | พัฒนาเพื่อการศึกษาไทย
+  </footer>
+
+  <script>
+    function checkCustomTopic(select) {
+      const customInput = document.getElementById("customTopic");
+      if (select.value === "custom") {
+        customInput.classList.remove("hidden");
+        customInput.focus();
+      } else {
+        customInput.classList.add("hidden");
+      }
+    }
+
+    function updateTopicOptions() {
+      const subject = document.getElementById("subject").value;
+      const topicSelect = document.getElementById("topic");
+      const customInput = document.getElementById("customTopic");
+
+      const topicMap = {
+        "คณิตศาสตร์": ["เศษส่วน", "การวัด", "เรขาคณิต", "การบวก ลบ คูณ หาร"],
+        "วิทยาศาสตร์": ["แรงโน้มถ่วง", "พลังงาน", "วงจรไฟฟ้า", "ดวงดาว"],
+        "ภาษาไทย": ["คำคล้องจอง", "การอ่านจับใจความ", "สำนวน สุภาษิต"],
+        "ภาษาอังกฤษ": ["คำศัพท์พื้นฐาน", "Tense", "บทสนทนา"],
+        "สังคมศึกษา": ["ภูมิศาสตร์ไทย", "ศาสนา", "หน้าที่พลเมือง"],
+        "ศิลปะ": ["วาดภาพระบายสี", "ดนตรีพื้นฐาน"],
+        "สุขศึกษา": ["อาหารและโภชนาการ", "สุขภาพจิต"]
+      };
+
+      const defaultTopics = topicMap[subject] || ["ทั่วไป"];
+      topicSelect.innerHTML = defaultTopics.map(t => `<option>${t}</option>`).join("") + '<option value="custom">อื่นๆ (พิมพ์เพิ่ม)</option>';
+      customInput.classList.add("hidden");
+    }
+
+    function copyToClipboard(id) {
+      const el = document.getElementById(id);
+      el.select();
+      document.execCommand('copy');
+    }
+
+    function generatePrompts() {
+      const subject = document.getElementById("subject").value;
+      const idea = document.getElementById("idea").value;
+      let topic = document.getElementById("topic").value;
+      if (topic === "custom") {
+        topic = document.getElementById("customTopic").value;
+      }
+      const level = document.getElementById("level").value;
+      const players = document.getElementById("players").value;
+      let difficulty = "ปานกลาง";
+      if (idea.includes("ตอบคำถาม") || idea.includes("ไขปริศนา")) difficulty = "ยาก";
+      else if (idea.includes("บิงโก")) difficulty = "ง่าย";
+
+      let popupHtml = "";
+      for (let i = 1; i <= 2; i++) {
+        const variation = i === 1 ? "รูปแบบการเล่นเน้นความร่วมมือและการสะท้อนคิด" : "รูปแบบการเล่นเน้นการแข่งขันและความเร็ว";
+        const text = `🔹 Prompt #${i}\n\n` +
+          `หัวข้อวิชา: ${subject}\n` +
+          `เรื่อง: ${topic}\n` +
+          `แนวเกม: ${idea} | ระดับ: ${level} | ผู้เล่น: ${players} | ความยาก: ${difficulty}\n\n` +
+          `คำอธิบาย: สร้างเกมแนว \"${idea}\" สำหรับนักเรียนระดับ ${level} ที่เรียนเรื่อง ${topic} ในวิชา ${subject} โดยออกแบบให้เหมาะสมกับจำนวนผู้เล่น ${players} โดยระดับความยากที่แนะนำคือ ${difficulty} โดยมีองค์ประกอบที่แตกต่าง เช่น ตัวละคร กติกา การออกแบบภาพประกอบ และรูปแบบคำถามหรือสถานการณ์ตามแนวทางของ Canva AI อย่างละเอียด พร้อมเนื้อหาความยาวประมาณ 500 คำ โดยมีจุดเด่นคือ ${variation}\n\n` +
+          `🧠 จุดประสงค์: ฝึกฝนความเข้าใจในเนื้อหา เพิ่มการมีส่วนร่วม และส่งเสริมความสนุกสนานในการเรียนรู้\n\n` +
+          `📌 หมายเหตุ: ปรับแต่งเพิ่มเติมให้เหมาะกับระดับนักเรียนและทรัพยากรที่มีในโรงเรียนของคุณ`;
+
+        popupHtml += `<h3 class='text-lg font-semibold mb-1'>Prompt #${i}</h3>`;
+        popupHtml += `<textarea id='promptText${i}' readonly class='w-full h-40 p-2 border mb-2 text-sm rounded bg-gray-100'>${text}</textarea>`;
+        popupHtml += `<button onclick=\"copyToClipboard('promptText${i}')\" class='mb-4 bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded shadow'>📋 คัดลอก Prompt</button>`;
+      }
+
+      Swal.fire({
+        didOpen: () => {
+          document.querySelectorAll('textarea').forEach(t => t.scrollTop = 0);
+        },
+        title: '🎮 Prompt ที่สร้างได้',
+        html: popupHtml,
+        width: 800,
+        customClass: {
+          popup: 'rounded-xl shadow-lg',
+        },
+        showCloseButton: true,
+        confirmButtonText: '✅ ปิดหน้าต่าง',
+      });
+    }
+  </script>
+</body>
+</html>
